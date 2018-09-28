@@ -1,0 +1,21 @@
+<!-- index.html -->
+{% extends 'base.html' %}
+{% block title %} 我的读书 {% endblock %}
+{% block content %}
+    {% for book in books %}
+        <div id="content" class="row">
+            <a href="/book/{{ book.id }}">
+                <p class="text-left">
+                    <span class="sort">[{{ book.tag }}]</span>
+                    <span class="title">{{ book.title }}</span>
+                </p>
+            </a>
+        </div>
+    {% empty %}
+        <div class="row">
+            <p class="text-center">
+                请在后台管理添加书籍
+            </p>
+        </div>
+    {% endfor %}
+{% endblock %}

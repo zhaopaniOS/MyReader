@@ -1,0 +1,28 @@
+<!-- base.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <!-- base.css -->
+    <link rel="stylesheet" type="text/css" href="/static/css/base.css">
+
+    <title>
+        {% block title %} {% endblock %}
+    </title>
+</head>
+<body>
+    {% include 'header.html' %}
+    {% include 'navigation.html' %}
+    <!-- 内容 -->
+    <div class="container main">
+        {% block content %} {% endblock %}
+    </div>
+    {% include 'footer.html' %}
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!-- index.html -->
+{% extends 'base.html' %}
+{% block title %} 管理书籍 {% endblock %}
+{% block content %}
+    {% for source in sources %}
+    {% if forloop.first %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+              <th>书名</th>
+              <th>作者</th>
+              <th>状态</th>
+            </tr>
+        </thead>
+        <tbody>
+    {% endif %}
+            <tr>
+              <td>
+                  {{ source.book_name }}
+              </td>
+              <td>
+                  {{ source.author }}
+              </td>
+              <td>
+                  {% if source.activate %}
+                  <a href="/book_manager/{{ source.id }}">有效</a>
+                  {% endif %}
+              </td>
+            </tr>
+    {% if forloop.last %}
+        </tbody>
+    </table>
+    {% endif %}
+    {% empty %}
+        <div class="row">
+            <p class="text-center">
+                请在后台管理添加书籍来源
+            </p>
+        </div>
+    {% endfor %}
+{% endblock %}

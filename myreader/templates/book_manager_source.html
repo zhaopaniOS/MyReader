@@ -1,0 +1,87 @@
+<!-- index.html -->
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block title %} 管理书籍 {% endblock %}
+{% block content %}
+    <div id="content" class="row">
+        <a href="{{ source.all }}">
+            <h3>{{ source.book_name }} - 源目录</h3>
+        </a>
+        {% for a_link in a_links %}
+        {% if forloop.first %}
+        <a href="#bottom" style="color:Red;">
+            <p id="top">↓直达页面底部</p>
+        </a>
+        {% endif %}
+        <a href="{{ a_link.href }}" class="chapter">
+            <p>{{ a_link.title }}</p>
+        </a>
+        {% if forloop.last %}
+        <a href="#top" style="color:Blue;">
+            <p id="bottom">↑直达页面顶部</p>
+        </a>
+        {% endif %}
+        {% empty %}
+            <p>读取目录列表为空，请检查源目录以及解析代码是否匹配</p>
+        {% endfor %}
+        <script type="text/javascript">
+            function getCookie(name) {
+                var cookieValue = null;
+                if (document.cookie && document.cookie != '') {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = jQuery.trim(cookies[i]);
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+            var colors = ['red', 'green', 'blue'];
+            function postSourceSection(sourceid, section) {
+                var link = $(".chapter")[section];
+                link.style.color = colors[1];
+                var url = "/book_manager/" + sourceid + "/" + section;
+                var data = {}
+                data.href = link.href;
+                data.title = link.children[0].innerText;
+                $.ajax({
+                    type:"post",
+                    url:url,
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(data),
+                    dataType:"json",
+                    success:function(msg){
+                        if(msg.code==200){
+                            current += 1;
+                            link.style.color = colors[2];
+                            postSourceSection({{ source.id }}, current);
+                        } else {
+                            link.style.color = colors[0];
+                            alert('failed response');
+                        }
+                    },
+                    error:function(msg){
+                        link.style.color = colors[0];
+                        alert('error, break');
+                    },
+                    timeout: 60000,
+                    beforeSend: function (XMLHttpRequest) {
+                        XMLHttpRequest.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                    }
+                });
+            }
+            var count = 0;
+            var current = {{ current }};
+            $(function(){
+                count = $(".chapter").length;
+                if (count > 0) {
+                    postSourceSection({{ source.id }}, current);
+                }
+            })
+        </script>
+    </div>
+{% endblock %}

@@ -1,0 +1,20 @@
+<!-- index.html -->
+{% extends 'base.html' %}
+{% block title %} {{ book.title}} {% endblock %}
+{% block content %}
+    {% for chapter in chapters %}
+        <div class="row">
+            <a href="/book/{{ book.id }}/{{ chapter.section }}">
+                <p class="text-left">
+                    <span class="title">{{ chapter.title }}</span>
+                </p>
+            </a>
+        </div>
+    {% empty %}
+        <div class="row">
+            <p class="text-center">
+                请在后台管理添加书籍章节内容
+            </p>
+        </div>
+    {% endfor %}
+{% endblock %}

@@ -1,0 +1,10 @@
+<!-- index.html -->
+{% extends 'base.html' %}
+{% block title %} {{ book.title }} - {{ chapter.title }} {% endblock %}
+{% block content %}
+    <div class="row">
+        {% autoescape off %}
+            {{ chapter.content }}
+        {% endautoescape %}
+    </div>
+{% endblock %}
