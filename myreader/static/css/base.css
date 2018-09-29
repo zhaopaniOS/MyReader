@@ -10,17 +10,17 @@
     padding-right: 10px
 }
 
-#content .row {
+#content {
     margin-left: 10px;
     margin-right: 10px;
 }
 
-#content_header.row {
+#content_header {
     margin-left: 10px;
     margin-right: 10px;
 }
 
-#content_bottom.row {
+#content_bottom {
     margin-left: 10px;
     margin-right: 10px;
 }

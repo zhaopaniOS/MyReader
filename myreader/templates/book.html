@@ -3,7 +3,7 @@
 {% block title %} {{ book.title}} {% endblock %}
 {% block content %}
     {% for chapter in chapters %}
-        <div class="row">
+        <div id="content" class="row">
             <a href="/book/{{ book.id }}/{{ chapter.section }}">
                 <p class="text-left">
                     <span class="title">{{ chapter.title }}</span>
