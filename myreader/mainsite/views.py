@@ -85,6 +85,7 @@ def book_manager_source(request, sourceid):
                 book.updated = datetime.datetime.now(tz=timezone.utc)
                 book.save()
         else:
+            book = book[0]
             if book.latest and type(book.latest) == int:
                 current = book.latest + 1
 
