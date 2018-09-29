@@ -3,7 +3,9 @@
 from django.template.loader import get_template
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest, JsonResponse
 from django.shortcuts import render
+from django.utils import timezone
 from django.core.files.base import ContentFile
+from django.urls import reverse
 from .models import Book, Chapter, BookOriginalSource
 import json
 import re
@@ -33,9 +35,23 @@ def book_section(request, bookid, section):
     try:
         book = Book.objects.get(id=bookid)
         chapter = Chapter.objects.get(book=book, section=section)
+        max = Chapter.objects.filter(book=book).order_by('-section')[0]
+
+        home_url = reverse('book_url', args=(bookid,))
+        if section == 0:
+            prev_url = home_url
+        else:
+            prev_url = reverse('book_section_url', args=(bookid, section - 1,))
+
+        if section == max.section:
+            next_url = home_url
+        else:
+            next_url = reverse('book_section_url', args=(bookid, section + 1,))
+
         html = template.render(locals())
         return HttpResponse(html)
-    except:
+    except Exception as e:
+        print(str(e))
         return HttpResponseNotFound()
 
 def book_manager(request):
@@ -55,7 +71,7 @@ def book_manager_source(request, sourceid):
             res = requests.get(source.url)
             if res.status_code == 200:
                 soup = BeautifulSoup(res.content, "html.parser")
-                book = Book.objects.create()
+                book = Book()
                 book.title = soup.head.find("meta", property="og:novel:book_name")["content"]
                 book.author = soup.head.find("meta", property="og:novel:author")["content"]
                 book.desc = soup.head.find("meta", property="og:description")["content"]
@@ -66,7 +82,7 @@ def book_manager_source(request, sourceid):
                 book.tag = soup.head.find("meta", property="og:novel:category")["content"]
                 book.status = soup.head.find("meta", property="og:novel:status")["content"]
                 book.latest = 0
-                book.updated = ""
+                book.updated = datetime.datetime.now(tz=timezone.utc)
                 book.save()
         else:
             if book.latest and type(book.latest) == int:
@@ -88,7 +104,8 @@ def book_manager_source(request, sourceid):
 
         html = template.render(locals())
         return HttpResponse(html)
-    except:
+    except Exception as exp:
+        print(str(exp))
         return HttpResponseNotFound()
 
 def book_manager_source_section(request, sourceid, section):
@@ -121,6 +138,14 @@ def book_manager_source_section(request, sourceid, section):
                         if child.name != 'br':
                             child.decompose()
 
+                # 删除属性class、style
+                del div_tag['class']
+                del div_tag['style']
+
+                content = div_tag.prettify()
+                if not content or len(content) < 25:
+                    return JsonResponse({'code': 500, 'msg': '源文件正文内容不正常，请手动核实'})
+
                 # 构建数据库对象
                 source = BookOriginalSource.objects.get(id=sourceid)
                 book = Book.objects.get(title=source.book_name,author=source.author)
@@ -131,21 +156,22 @@ def book_manager_source_section(request, sourceid, section):
                     chapter.book = book
                     chapter.title = title
                     chapter.section = section
-                    chapter.content = div_tag.prettify()
+                    chapter.content = content
                     chapter.save()
                 else:
                     # just refers to the existing one
                     chapter.title = title
-                    chapter.content = div_tag.prettify()
+                    chapter.content = content
                     chapter.save()
 
                 # 同步更新book
                 book.latest = section
-                book.updated = datetime.datetime.now()
+                book.updated = datetime.datetime.now(tz=timezone.utc)
                 book.save()
                 return JsonResponse({'code': 200, 'msg': 'success'})
 
-        except:
+        except Exception as exp:
+            print(str(exp))
             return HttpResponseBadRequest()
 
     return HttpResponseNotFound()

@@ -21,8 +21,8 @@ from mainsite import views
 
 urlpatterns = [
     path('', views.homepage),
-    path('book/<int:bookid>', views.book),
-    path('book/<int:bookid>/<int:section>', views.book_section),
+    path('book/<int:bookid>', views.book, name='book_url'),
+    path('book/<int:bookid>/<int:section>', views.book_section, name='book_section_url'),
     path('book_manager/', views.book_manager),
     path('book_manager/<int:sourceid>', views.book_manager_source),
     path('book_manager/<int:sourceid>/<int:section>', views.book_manager_source_section),

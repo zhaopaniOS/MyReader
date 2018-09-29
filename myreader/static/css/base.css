@@ -15,6 +15,16 @@
     margin-right: 10px;
 }
 
+#content_header.row {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+#content_bottom.row {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
 .main {
     margin-top: 20px
 }
@@ -68,6 +78,33 @@
 }
 
 .chapter {
+}
+
+.red {
+    color: red
+}
+
+.page_direct {
+    background: #d4eaf2;
+    height: 22px;
+    line-height: 22px;
+    text-align: center;
+}
+
+.page_direct a {
+    font-size: 16px;
+    padding: 8px 8px;
+    line-height: 22px;
+}
+
+.page_title {
+    font-size: 16px;
+    height: 22px;
+    text-align:center;
+}
+
+#chaptercontent {
+    padding: 10px;
 }
 
 @media handheld,only screen and (max-width: 640px) {

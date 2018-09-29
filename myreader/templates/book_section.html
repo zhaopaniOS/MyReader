@@ -2,9 +2,38 @@
 {% extends 'base.html' %}
 {% block title %} {{ book.title }} - {{ chapter.title }} {% endblock %}
 {% block content %}
-    <div class="row">
+    <div id="content_header" class="row">
+        <p class="page_title red">
+            {{ chapter.title }}
+        </p>
+        <p class="page_direct">
+            <a href="{{ prev_url }}">
+                上一页
+            </a>
+            <a href="{{ home_url }}">
+                目录
+            </a>
+            <a href="{{ next_url }}">
+                下一页
+            </a>
+        </p>
+    </div>
+    <div id="content" class="row">
         {% autoescape off %}
             {{ chapter.content }}
         {% endautoescape %}
+    </div>
+    <div id="content_bottom" class="row">
+        <p class="page_direct">
+            <a href="{{ prev_url }}">
+                上一页
+            </a>
+            <a href="{{ home_url }}">
+                目录
+            </a>
+            <a href="{{ next_url }}">
+                下一页
+            </a>
+        </p>
     </div>
 {% endblock %}

@@ -9,6 +9,7 @@ class BookAdmin(admin.ModelAdmin):
 @admin.register(Chapter)
 class ChapterAdmin(admin.ModelAdmin):
     list_display = ('book', 'section', 'title', 'content')
+    ordering = ('book', 'section', )
 
 @admin.register(BookOriginalSource)
 class BookOriginalSourceAdmin(admin.ModelAdmin):
