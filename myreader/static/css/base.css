@@ -5,24 +5,9 @@
     margin-bottom: 0px
 }
 
-.container {
-    padding-left: 10px;
-    padding-right: 10px
-}
-
-#content {
-    margin-left: 10px;
-    margin-right: 10px;
-}
-
-#content_header {
-    margin-left: 10px;
-    margin-right: 10px;
-}
-
-#content_bottom {
-    margin-left: 10px;
-    margin-right: 10px;
+.row {
+    margin-left: 0px;
+    margin-right: 0px;
 }
 
 .main {
