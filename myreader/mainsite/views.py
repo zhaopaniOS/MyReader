@@ -109,6 +109,55 @@ def book_manager_source(request, sourceid):
         print(str(exp))
         return HttpResponseNotFound()
 
+def get_chapter_content(href):
+    sa = requests.utils.urlparse(href)
+    res = requests.get(href)
+    if res.status_code == 200:
+        soup = BeautifulSoup(res.content, "html.parser")
+        div_tag = soup.find("div", id="chaptercontent")
+
+        # 移除chaptercontent下边的子节点，修正br
+        for child in div_tag.children:
+            if child and child.name:
+                if child.name != 'br':
+                    child.decompose()
+
+        # 删除属性class、style
+        del div_tag['class']
+        del div_tag['style']
+
+        # 意外情况，有分页
+        a_tag = soup.find("a", string=re.compile("下一页"))
+        if a_tag:
+            next_page = sa.scheme + "://" + sa.netloc + a_tag['href']
+            return (div_tag, next_page)
+
+        return (div_tag, None)
+
+    return (None, None)
+
+def copy_div_tag_to_another(div_tag, next_tag):
+    for child in next_tag.children:
+        div_tag.append(child.extract())
+
+def get_all_chapter_content(href):
+    div_tag, next_page = get_chapter_content(href)
+    if not div_tag:
+        return None
+    if not next_page:
+        return div_tag
+    while True:
+        tmp_div_tag, tmp_next_page = get_chapter_content(next_page)
+        if not tmp_div_tag:
+            break
+        # copy to div_tag
+        copy_div_tag_to_another(div_tag, tmp_div_tag)
+        # check if continue
+        if not tmp_next_page:
+            break
+        next_page = tmp_next_page
+    return div_tag
+
 def book_manager_source_section(request, sourceid, section):
     # 这里请求的是json
     if request.method == 'POST':
@@ -128,30 +177,17 @@ def book_manager_source_section(request, sourceid, section):
             href = jsonobj['href']
             title = jsonobj['title']
 
-            res = requests.get(href)
-            if res.status_code == 200:
-                soup = BeautifulSoup(res.content, "html.parser")
-                div_tag = soup.find("div", id="chaptercontent")
-
-                # 移除chaptercontent下边的子节点，修正br
-                for child in div_tag.children:
-                    if child and child.name:
-                        if child.name != 'br':
-                            child.decompose()
-
-                # 删除属性class、style
-                del div_tag['class']
-                del div_tag['style']
-
+            div_tag = get_all_chapter_content(href)
+            if div_tag:
                 content = div_tag.prettify()
-                if not content or len(content) < 25:
+                if not content or len(content) < 35:
                     return JsonResponse({'code': 500, 'msg': '源文件正文内容不正常，请手动核实'})
 
                 # 构建数据库对象
                 source = BookOriginalSource.objects.get(id=sourceid)
-                book = Book.objects.get(title=source.book_name,author=source.author)
+                book = Book.objects.get(title=source.book_name, author=source.author)
 
-                chapter, created = Chapter.objects.get_or_create(book=book,section=section)
+                chapter, created = Chapter.objects.get_or_create(book=book, section=section)
                 if created:
                     # means you have created a new person
                     chapter.book = book
