@@ -11,6 +11,7 @@ import json
 import re
 import requests
 from bs4 import BeautifulSoup
+import copy
 import datetime
 
 # Create your views here.
@@ -137,8 +138,13 @@ def get_chapter_content(href):
     return (None, None)
 
 def copy_div_tag_to_another(div_tag, next_tag):
+    old_len = len(div_tag.contents)
+    tags = len(next_tag.contents)
     for child in next_tag.children:
-        div_tag.append(child.extract())
+        div_tag.append(copy.copy(child))
+    new_len = len(div_tag.contents)
+    if old_len + tags != new_len:
+        print('copy_div_tag_to_another maybe something wrong')
 
 def get_all_chapter_content(href):
     div_tag, next_page = get_chapter_content(href)
