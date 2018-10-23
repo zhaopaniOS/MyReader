@@ -52,6 +52,7 @@
                 var data = {}
                 data.href = link.href;
                 data.title = link.children[0].innerText;
+                data.ignoreEmptyContent = false;
                 $.ajax({
                     type:"post",
                     url:url,
