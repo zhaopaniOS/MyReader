@@ -187,9 +187,11 @@ def book_manager_source_section(request, sourceid, section):
             div_tag = get_all_chapter_content(href)
             if div_tag:
                 content = div_tag.prettify()
-                if not ignoreEmptyContent:
-                    if not content or len(content) < 35:
+                if not content:
+                    if not ignoreEmptyContent:
                         return JsonResponse({'code': 500, 'msg': '源文件正文内容不正常，请手动核实'})
+                    else:
+                        content = '源文件正文内容不正常，请手动核实'
 
                 # 构建数据库对象
                 source = BookOriginalSource.objects.get(id=sourceid)
