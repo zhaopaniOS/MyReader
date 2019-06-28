@@ -219,6 +219,6 @@ def book_manager_source_section(request, sourceid, section):
 
         except Exception as exp:
             print(str(exp))
-            return HttpResponseBadRequest()
+            return HttpResponseBadRequest(content=str(exp))
 
     return HttpResponseNotFound()
