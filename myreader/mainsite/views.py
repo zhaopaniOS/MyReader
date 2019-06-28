@@ -2,6 +2,7 @@
 
 from django.template.loader import get_template
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest, JsonResponse
+from django.views.decorators.csrf import csrf_protect
 from django.shortcuts import render
 from django.utils import timezone
 from django.core.files.base import ContentFile
@@ -15,12 +16,14 @@ import copy
 import datetime
 
 # Create your views here.
+@csrf_protect
 def homepage(request):
     template = get_template('index.html')
     books = Book.objects.all()
     html = template.render(locals())
     return HttpResponse(html)
 
+@csrf_protect
 def book(request, bookid):
     template = get_template('book.html')
     try:
@@ -31,6 +34,7 @@ def book(request, bookid):
     except:
         return HttpResponseNotFound()
 
+@csrf_protect
 def book_section(request, bookid, section):
     template = get_template('book_section.html')
     try:
@@ -55,12 +59,14 @@ def book_section(request, bookid, section):
         print(str(e))
         return HttpResponseNotFound()
 
+@csrf_protect
 def book_manager(request):
     template = get_template('book_manager.html')
     sources = BookOriginalSource.objects.all()
     html = template.render(locals())
     return HttpResponse(html)
 
+@csrf_protect
 def book_manager_source(request, sourceid):
     template = get_template('book_manager_source.html')
     try:
